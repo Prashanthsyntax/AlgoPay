@@ -1,16 +1,17 @@
-// src/components/Transactions.tsx
 import React, { useEffect, useState } from "react";
+import { getTransactions } from "../utils/algorand";
 
-export default function Transactions({ account }: { account: string }) {
+interface TransactionsProps {
+  account: string;
+}
+
+export default function Transactions({ account }: TransactionsProps) {
   const [txns, setTxns] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchTxns = async () => {
-      const res = await fetch(
-        `https://testnet-idx.algonode.cloud/v2/accounts/${account}/transactions`
-      );
-      const data = await res.json();
-      setTxns(data.transactions);
+      const transactions = await getTransactions(account);
+      setTxns(transactions);
     };
     if (account) fetchTxns();
   }, [account]);

@@ -1,35 +1,38 @@
-// src/components/WalletConnect.tsx
 import React, { useState } from "react";
-import { PeraWalletConnect } from "@perawallet/connect";
+import { connectWallet, disconnectWallet } from "../utils/algorand";
 
-const peraWallet = new PeraWalletConnect();
+interface WalletProps {
+  setAccount: (account: string | null) => void;
+}
 
-export default function WalletConnect() {
-  const [account, setAccount] = useState<string | null>(null);
+export default function WalletConnect({ setAccount }: WalletProps) {
+  const [currentAccount, setCurrentAccount] = useState<string | null>(null);
 
-  const connectWallet = async () => {
+  const handleConnect = async () => {
     try {
-      const newAccounts = await peraWallet.connect();
-      setAccount(newAccounts[0]); // first account
+      const accounts = await connectWallet();
+      setCurrentAccount(accounts[0]);
+      setAccount(accounts[0]);
     } catch (err) {
-      console.error("Failed to connect:", err);
+      console.error(err);
     }
   };
 
-  const disconnectWallet = () => {
-    peraWallet.disconnect();
+  const handleDisconnect = () => {
+    disconnectWallet();
+    setCurrentAccount(null);
     setAccount(null);
   };
 
   return (
     <div>
-      {account ? (
+      {currentAccount ? (
         <>
-          <p>Connected: {account}</p>
-          <button onClick={disconnectWallet}>Disconnect</button>
+          <p>Connected: {currentAccount}</p>
+          <button onClick={handleDisconnect}>Disconnect</button>
         </>
       ) : (
-        <button onClick={connectWallet}>Connect Pera Wallet</button>
+        <button onClick={handleConnect}>Connect Pera Wallet</button>
       )}
     </div>
   );

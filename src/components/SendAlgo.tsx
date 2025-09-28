@@ -1,32 +1,22 @@
-// src/components/SendAlgo.tsx
 import React, { useState } from "react";
-import algosdk from "algosdk";
-import { peraWallet } from "../utils/algorand"; // re-exported instance
+import { sendAlgo } from "../utils/algorand";
 
-export default function SendAlgo() {
+interface SendProps {
+  account: string;
+}
+
+export default function SendAlgo({ account }: SendProps) {
   const [receiver, setReceiver] = useState("");
   const [amount, setAmount] = useState("");
 
-  const sendTransaction = async () => {
+  const handleSend = async () => {
+    if (!account) return alert("Connect wallet first!");
     try {
-      const algodClient = new algosdk.Algodv2("", "https://testnet-api.algonode.cloud", "");
-      const accounts = await peraWallet.reconnectSession();
-      const sender = accounts[0];
-
-      const params = await algodClient.getTransactionParams().do();
-      const txn = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
-        from: sender,
-        to: receiver,
-        amount: Math.floor(Number(amount) * 1e6), // convert Algo to microAlgos
-        suggestedParams: params,
-      });
-
-      const signedTxn = await peraWallet.signTransaction([txn]);
-      const { txId } = await algodClient.sendRawTransaction(signedTxn).do();
-
-      console.log("Transaction sent with ID:", txId);
+      const txId = await sendAlgo(account, receiver, Number(amount));
+      alert(`Transaction successful! TXID: ${txId}`);
     } catch (err) {
-      console.error("Transaction failed:", err);
+      console.error(err);
+      alert("Transaction failed");
     }
   };
 
@@ -44,7 +34,7 @@ export default function SendAlgo() {
         value={amount}
         onChange={(e) => setAmount(e.target.value)}
       />
-      <button onClick={sendTransaction}>Send Algo</button>
+      <button onClick={handleSend}>Send Algo</button>
     </div>
   );
 }
