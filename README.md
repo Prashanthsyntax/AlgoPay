@@ -17,3 +17,10 @@ Wallet Integration: @perawallet/connect
 API: Algorand Testnet REST APIs
 Styling: CSS / Tailwind / Material UI (optional)
 
+## ⚡ Notes
+This project uses Algorand Testnet; for Mainnet, update the Algod endpoint and token.
+Ensure you have Pera Wallet installed in your browser or mobile device.
+All blockchain interactions are handled via algosdk and Pera Wallet Connect API.
+
+## 📄 License
+This project is open-source and free to use.
